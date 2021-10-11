@@ -1,0 +1,187 @@
+openapi: 3.0.1
+info:
+  contact:
+    email: euan.scott@entelect.co.za
+  description: A small playground project to learn what Java Spring is all about.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Spring Playground
+  version: 0.0.1
+servers:
+- url: //localhost:8080/
+paths:
+  /issues:
+    get:
+      description: Returns a list of 6 Comics
+      operationId: getIssueList
+      responses:
+        "200":
+          content: {}
+          description: Successful operation
+        "404":
+          content: {}
+          description: List of Comics not found
+      summary: Retrieves a list of Comics
+      tags:
+      - issues
+      x-accepts: application/json
+  /issues/{id}:
+    get:
+      description: Returns a single Comic
+      operationId: getIssueById
+      parameters:
+      - description: Id of the Comic to return
+        in: path
+        name: id
+        required: true
+        schema:
+          format: int64
+          type: integer
+      responses:
+        "200":
+          content: {}
+          description: Successful operation
+        "400":
+          content: {}
+          description: Invalid ID supplied
+        "404":
+          content: {}
+          description: Comic not found
+      summary: Retrieves Comic by ID
+      tags:
+      - issue
+      x-accepts: application/json
+  /suppliers:
+    get:
+      description: Returns a list of all Suppliers
+      operationId: getSupplierList
+      responses:
+        "200":
+          content: {}
+          description: Successful operation
+        "404":
+          content: {}
+          description: List of Suppliers not found
+      summary: Retrieve a list of Suppliers
+      tags:
+      - supplier
+      x-accepts: application/json
+  /todo:
+    get:
+      description: Returns a list of all Todos
+      operationId: getTodoList
+      responses:
+        "200":
+          content: {}
+          description: Successful operation
+        "404":
+          content: {}
+          description: List of Todo not found
+      summary: Retrieves a list of Todos
+      tags:
+      - todo
+      x-accepts: application/json
+components:
+  schemas:
+    Comic:
+      properties:
+        id:
+          type: number
+        title:
+          type: string
+        description:
+          type: string
+        seriesNumber:
+          type: integer
+        publicationDate:
+          type: string
+        publisherID:
+          type: integer
+        publisher:
+          type: string
+        creators:
+          items:
+            $ref: '#/components/schemas/Creators'
+          type: array
+        stock:
+          items:
+            $ref: '#/components/schemas/Stock'
+          type: array
+        thumbnail:
+          $ref: '#/components/schemas/Thumbnail'
+        images:
+          items:
+            $ref: '#/components/schemas/Image'
+          type: array
+      type: object
+    Creators:
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        countryOfResidence:
+          type: string
+        taxReferenceNumber:
+          type: string
+        emailAddress:
+          type: string
+      type: object
+    Stock:
+      properties:
+        id:
+          type: integer
+        condition:
+          enum:
+          - Mint
+          - Garbage
+          type: string
+        availableQuantity:
+          type: integer
+        price:
+          type: integer
+      type: object
+    Thumbnail:
+      properties:
+        path:
+          type: string
+        extension:
+          type: string
+        pathIncludingExtension:
+          type: string
+      type: object
+    Image:
+      properties:
+        path:
+          type: string
+        extension:
+          type: string
+        pathIncludingExtension:
+          type: string
+      type: object
+    Supplier:
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        city:
+          type: string
+        reference:
+          type: string
+      type: object
+    Todo:
+      properties:
+        userId:
+          type: integer
+        id:
+          type: integer
+        title:
+          type: string
+        completed:
+          type: string
+      type: object
+x-original-swagger-version: "2.0"
+

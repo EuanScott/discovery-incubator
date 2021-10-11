@@ -1,0 +1,203 @@
+swagger: "2.0"
+info:
+  title: "Spring Playground"
+  version: "0.0.1"
+  description: "A small playground project to learn what Java Spring is all about."
+  termsOfService: "http://swagger.io/terms/"
+  contact:
+    name: "Euan Scott"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "localhost:8080"
+paths:
+  /issues:
+    get:
+      tags:
+        - "Issues"
+      summary: "Retrieves a list of Comics"
+      description: "Returns a list of 6 Comics"
+      operationId: "getIssueList"
+      produces:
+        - appplication/json
+      responses:
+        "200":
+          description: "Successful operation"
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/IssueDTO"
+        404:
+          description: List of Comics not found
+        500:
+          description: Internal server error. Please copntact support at [no-reply@support.co.za]
+        default:
+          description: An unexpected error occured, blame the developer
+  /issues/{id}:
+    get:
+      tags:
+        - "Issues"
+      summary: "Retrieves Comic by ID"
+      description: "Returns a single Comic"
+      operationId: "getIssueById"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id of the Comic to return"
+          required: true
+          type: number
+      responses:
+        "200":
+          description: "Successful operation"
+          schema:
+            type: object
+            $ref: "#/definitions/IssueDTO"
+        "400":
+          description: "Invalid ID supplied"
+        404:
+          description: "Comic not found"
+  /suppliers:
+    get:
+      tags:
+        - "Supplier"
+      summary: "Retrieve a list of Suppliers"
+      description: "Returns a list of all Suppliers"
+      operationId: "getSupplierList"
+      produces:
+        - appplication/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/SupplierDTO"
+        404:
+          description: List of Suppliers not found
+        500:
+          description: Internal server error. Please copntact support at [no-reply@support.co.za]
+        default:
+          description: An unexpected error occured, blame the developer
+  /todo:
+    get:
+      tags:
+        - "Todo"
+      summary: "Retrieves a list of Todos"
+      description: "Returns a list of all Todos - This endpoint only works in dev environment"
+      operationId: "getTodoList"
+      produces:
+        - appplication/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/TodoDTO"
+        404:
+          description: List of Todo's not found
+        500:
+          description: Internal server error. Please copntact support at [no-reply@support.co.za]
+        default:
+          description: An unexpected error occured, blame the developer
+definitions:
+  IssueDTO:
+    type: object
+    properties:
+      id:
+        type: number
+      title:
+        type: string
+      description:
+        type: string
+      seriesNumber:
+        type: integer
+      publicationDate:
+        type: string
+      publisherID:
+        type: integer
+      publisher:
+        type: string
+      creators:
+        type: array
+        items:
+          $ref: "#/definitions/CreatorsDTO"
+      stock:
+        type: array
+        items:
+          $ref: "#/definitions/StockDTO"
+      thumbnail:
+        type: object
+        $ref: "#/definitions/ThumbnailDTO"
+      images:
+        type: array
+        items:
+          $ref: "#/definitions/ImageDTO"
+  CreatorsDTO:
+    type: object
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      countryOfResidence:
+        type: string
+      taxReferenceNumber:
+        type: string
+      emailAddress:
+        type:
+          string
+  StockDTO:
+    type: object
+    properties:
+      id:
+        type: integer
+      condition:
+        type: string
+        enum:
+          - "Mint"
+          - "Garbage"
+      availableQuantity:
+        type: integer
+      price:
+        type: integer
+  ThumbnailDTO:
+    type: object
+    properties:
+      path:
+        type: string
+      extension:
+        type: string
+      pathIncludingExtension:
+        type: string
+  ImageDTO:
+    type: object
+    properties:
+      path:
+        type: string
+      extension:
+        type: string
+      pathIncludingExtension:
+        type: string
+  SupplierDTO:
+    type: object
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      city:
+        type: string
+      reference:
+        type: string
+  TodoDTO:
+    type: object
+    properties:
+      userId:
+        type: integer
+      id:
+        type: integer
+      title:
+        type: string
+      completed:
+        type: string

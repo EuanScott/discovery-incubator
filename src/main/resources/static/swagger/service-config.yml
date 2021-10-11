@@ -1,0 +1,159 @@
+swagger: "2.0"
+info:
+  title: "3rd Party API"
+  version: "1.0.0"
+  description: "3rd Party API endpoints to be used in the Spring Playground custom Controllers"
+  termsOfService: "http://swagger.io/terms/"
+  contact:
+    name: "Entelect"
+    url: "https://entelectza.sharepoint.com/training/self-study/incubator/angular-1-x-incubator-pack"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "frontendshowcase.azurewebsites.net"
+paths:
+  /api/Issues:
+    get:
+      tags:
+        - "Issues"
+      summary: "Retrieves a list of Comics"
+      description: "Returns a list of 6 Comics"
+      operationId: "getIssueList"
+      responses:
+        "200":
+          description: "Successful operation"
+        404:
+          description: "List of Comics not found"
+  /api/Issues/{id}:
+    get:
+      tags:
+        - "Issues"
+      summary: "Retrieves Comic by ID"
+      description: "Returns a single Comic"
+      operationId: "getIssueById"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id of the Comic to return"
+          required: true
+          type: number
+      responses:
+        "200":
+          description: "Successful operation"
+        "400":
+          description: "Invalid ID supplied"
+        404:
+          description: "Comic not found"
+  /api/Suppliers:
+    get:
+      tags:
+        - "Supplier"
+      summary: "Retrieve a list of Suppliers"
+      description: "Returns a list of all Suppliers"
+      operationId: "getSupplierList"
+      responses:
+        "200":
+          description: "Successful operation"
+        404:
+          description: "List of Suppliers not found"
+definitions:
+  Issue:
+    type: object
+    properties:
+      id:
+        type: number
+      title:
+        type: string
+      description:
+        type: string
+      seriesNumber:
+        type: number
+      publicationDate:
+        type: string
+      publisherID:
+        type: number
+      publisher:
+        type: string
+      creators:
+        type: array
+        items:
+          $ref: "#/definitions/Creators"
+      stock:
+        type: array
+        items:
+          $ref: "#/definitions/Stock"
+      thumbnail:
+        type: object
+        $ref: "#/definitions/Thumbnail"
+      images:
+        type: array
+        items:
+          $ref: "#/definitions/Image"
+  Creators:
+    type: object
+    properties:
+      id:
+        type: number
+      name:
+        type: string
+      countryOfResidence:
+        type: string
+      taxReferenceNumber:
+        type: string
+      emailAddress:
+        type:
+          string
+  Stock:
+    type: object
+    properties:
+      id:
+        type: number
+      condition:
+        type: string
+        enum:
+          - "Mint"
+          - "Garbage"
+      availableQuantity:
+        type: number
+      price:
+        type: number
+  Thumbnail:
+    type: object
+    properties:
+      path:
+        type: string
+      extension:
+        type: string
+      pathIncludingExtension:
+        type: string
+  Image:
+    type: object
+    properties:
+      path:
+        type: string
+      extension:
+        type: string
+      pathIncludingExtension:
+        type: string
+  Supplier:
+    type: object
+    properties:
+      id:
+        type: number
+      name:
+        type: string
+      city:
+        type: string
+      reference:
+        type: string
+  Todo:
+    type: object
+    properties:
+      userId:
+        type: integer
+      id:
+        type: integer
+      title:
+        type: string
+      completed:
+        type: string
