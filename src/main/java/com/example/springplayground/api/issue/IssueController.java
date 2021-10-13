@@ -30,8 +30,6 @@ public class IssueController implements IssuesApi {
     @Override
     public ResponseEntity<List<IssueDTO>> getIssueList() {
         List<Issue> issues = issueService.getIssues();
-        List<IssueDTO> tester1 = MapperUtil.mapList(issues, IssueDTO.class);
-        ResponseEntity<List<IssueDTO>> tester2 = ResponseEntity.ok(tester1);
-        return tester2;
+        return ResponseEntity.ok(MapperUtil.mapList(issues, IssueDTO.class));
     }
 }

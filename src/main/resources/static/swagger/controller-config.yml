@@ -19,7 +19,7 @@ paths:
       description: "Returns a list of 6 Comics"
       operationId: "getIssueList"
       produces:
-        - appplication/json
+        - application/json
       responses:
         "200":
           description: "Successful operation"
@@ -64,7 +64,7 @@ paths:
       description: "Returns a list of all Suppliers"
       operationId: "getSupplierList"
       produces:
-        - appplication/json
+        - application/json
       responses:
         "200":
           description: Successful operation
@@ -86,7 +86,7 @@ paths:
       description: "Returns a list of all Todos - This endpoint only works in dev environment"
       operationId: "getTodoList"
       produces:
-        - appplication/json
+        - application/json
       responses:
         "200":
           description: Successful operation
