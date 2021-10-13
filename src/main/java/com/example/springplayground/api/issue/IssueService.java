@@ -2,6 +2,7 @@ package com.example.springplayground.api.issue;
 
 import com.example.springplayground.retrofit.RetrofitService;
 import com.example.springplayground.service.model.Issue;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -10,7 +11,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 
-// https://stackoverflow.com/q/6827752 -> Difference between Spring An  notations
+// https://stackoverflow.com/q/6827752 -> Difference between Spring Annotations
 @Component
 public class IssueService {
 
@@ -20,6 +21,7 @@ public class IssueService {
         this.retrofitService = retrofitService;
     }
 
+    @Cacheable("issues") // Not BEAN, but an Annotation
     public List<Issue> getIssues() throws RuntimeException {
         Call<List<Issue>> retrofitCall = retrofitService.getIssues();
         Response<List<Issue>> response;

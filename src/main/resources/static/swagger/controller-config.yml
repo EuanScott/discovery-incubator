@@ -1,3 +1,4 @@
+
 swagger: "2.0"
 info:
   title: "Spring Playground"
@@ -33,27 +34,51 @@ paths:
           description: Internal server error. Please copntact support at [no-reply@support.co.za]
         default:
           description: An unexpected error occured, blame the developer
-  /issues/{id}:
+  #  /issues/{id}:
+  #    get:
+  #      tags:
+  #        - "Issues"
+  #      summary: "Retrieves Comic by ID"
+  #      description: "Returns a single Comic"
+  #      operationId: "getIssueById"
+  #      parameters:
+  #        - name: "id"
+  #          in: "path"
+  #          description: "Id of the Comic to return"
+  #          required: true
+  #          type: number
+  #      responses:
+  #        "200":
+  #          description: "Successful operation"
+  #          schema:
+  #            type: object
+  #            $ref: "#/definitions/IssueDTO"
+  #        "400":
+  #          description: "Invalid ID supplied"
+  #        404:
+  #          description: "Comic not found"
+  /issues/{name}:
     get:
       tags:
         - "Issues"
-      summary: "Retrieves Comic by ID"
-      description: "Returns a single Comic"
-      operationId: "getIssueById"
+      summary: Retrieve a Comic by name
+      description: Returns a single comic retrieved by the name provided
+      operationId: getIssueByName
       parameters:
-        - name: "id"
-          in: "path"
-          description: "Id of the Comic to return"
+        - name: name
+          in: path
+          description: Name of Comic to return
           required: true
-          type: number
+          type: string
       responses:
         "200":
           description: "Successful operation"
           schema:
-            type: object
-            $ref: "#/definitions/IssueDTO"
+            type: array
+            items:
+              $ref: "#/definitions/IssueDTO"
         "400":
-          description: "Invalid ID supplied"
+          description: "Invalid name supplied"
         404:
           description: "Comic not found"
   /suppliers:
