@@ -11,28 +11,6 @@ info:
     url: "http://www.apache.org/licenses/LICENSE-2.0.html"
 host: "localhost:8080"
 paths:
-#  /issues:
-#    get:
-#      tags:
-#        - "Issues"
-#      summary: "Retrieves a list of Comics"
-#      description: "Returns a list of 6 Comics"
-#      operationId: "getIssueList"
-#      produces:
-#        - application/json
-#      responses:
-#        "200":
-#          description: "Successful operation"
-#          schema:
-#            type: array
-#            items:
-#              $ref: "#/definitions/IssueDTO"
-#        404:
-#          description: List of Comics not found
-#        500:
-#          description: Internal server error. Please copntact support at [no-reply@support.co.za]
-#        default:
-#          description: An unexpected error occured, blame the developer
   /issues:
     post:
       tags:
@@ -67,29 +45,29 @@ paths:
           description: Internal server error. Please contact support at [no-reply@support.co.za]
         default:
           description: An unexpected error occured, blame the developer
-  #  /issues/{id}:
-  #    get:
-  #      tags:
-  #        - "Issues"
-  #      summary: "Retrieves Comic by ID"
-  #      description: "Returns a single Comic"
-  #      operationId: "getIssueById"
-  #      parameters:
-  #        - name: "id"
-  #          in: "path"
-  #          description: "Id of the Comic to return"
-  #          required: true
-  #          type: number
-  #      responses:
-  #        "200":
-  #          description: "Successful operation"
-  #          schema:
-  #            type: object
-  #            $ref: "#/definitions/IssueDTO"
-  #        "400":
-  #          description: "Invalid ID supplied"
-  #        404:
-  #          description: "Comic not found"
+  /issues/{id}:
+    get:
+      tags:
+        - "Issues"
+      summary: "Retrieves Comic by ID"
+      description: "Returns a single Comic"
+      operationId: "getIssueById"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id of the Comic to return"
+          required: true
+          type: number
+      responses:
+        "200":
+          description: "Successful operation"
+          schema:
+            type: object
+            $ref: "#/definitions/IssueDTO"
+        "400":
+          description: "Invalid ID supplied"
+        404:
+          description: "Comic not found"
   /suppliers:
     get:
       tags:
