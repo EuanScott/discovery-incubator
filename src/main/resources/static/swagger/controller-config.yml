@@ -1,4 +1,3 @@
-
 swagger: "2.0"
 info:
   title: "Spring Playground"
@@ -12,18 +11,52 @@ info:
     url: "http://www.apache.org/licenses/LICENSE-2.0.html"
 host: "localhost:8080"
 paths:
+#  /issues:
+#    get:
+#      tags:
+#        - "Issues"
+#      summary: "Retrieves a list of Comics"
+#      description: "Returns a list of 6 Comics"
+#      operationId: "getIssueList"
+#      produces:
+#        - application/json
+#      responses:
+#        "200":
+#          description: "Successful operation"
+#          schema:
+#            type: array
+#            items:
+#              $ref: "#/definitions/IssueDTO"
+#        404:
+#          description: List of Comics not found
+#        500:
+#          description: Internal server error. Please copntact support at [no-reply@support.co.za]
+#        default:
+#          description: An unexpected error occured, blame the developer
   /issues:
-    get:
+    post:
       tags:
         - "Issues"
-      summary: "Retrieves a list of Comics"
-      description: "Returns a list of 6 Comics"
-      operationId: "getIssueList"
+      summary: Returns a list of Comic Issues based on the user's search criteria
+      description: Returns a an array comic issues
+      operationId: getIssues
+      consumes:
+        - application/json
       produces:
         - application/json
+      parameters:
+        - name: searchIssues
+          in: body
+          description: Name of Comic to return
+          required: true
+          schema:
+            type: object
+            properties:
+              title:
+                type: string
       responses:
         "200":
-          description: "Successful operation"
+          description: Successful operation
           schema:
             type: array
             items:
@@ -31,7 +64,7 @@ paths:
         404:
           description: List of Comics not found
         500:
-          description: Internal server error. Please copntact support at [no-reply@support.co.za]
+          description: Internal server error. Please contact support at [no-reply@support.co.za]
         default:
           description: An unexpected error occured, blame the developer
   #  /issues/{id}:
@@ -57,30 +90,6 @@ paths:
   #          description: "Invalid ID supplied"
   #        404:
   #          description: "Comic not found"
-  /issues/{name}:
-    get:
-      tags:
-        - "Issues"
-      summary: Retrieve a Comic by name
-      description: Returns a single comic retrieved by the name provided
-      operationId: getIssueByName
-      parameters:
-        - name: name
-          in: path
-          description: Name of Comic to return
-          required: true
-          type: string
-      responses:
-        "200":
-          description: "Successful operation"
-          schema:
-            type: array
-            items:
-              $ref: "#/definitions/IssueDTO"
-        "400":
-          description: "Invalid name supplied"
-        404:
-          description: "Comic not found"
   /suppliers:
     get:
       tags:
