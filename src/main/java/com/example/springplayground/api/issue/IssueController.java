@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -42,7 +43,7 @@ public class IssueController implements IssuesApi {
 
         if (!comicIssues.isEmpty()) comicIssues.clear();
 
-        if (searchIssues.getTitle() == null) {
+        if (searchIssues.getTitle() == null || Objects.equals(searchIssues.getTitle(), "")) {
             int iterations = 5;
 
             IntStream.range(0, iterations)
