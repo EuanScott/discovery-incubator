@@ -13,6 +13,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -31,17 +33,37 @@ public class IssueController implements IssuesApi {
 
     @Override
     public ResponseEntity<IssueDTO> getIssueById(BigDecimal id) {
-        Issue issue = issueService.getIssue(id);
+
+        Future<Issue> futureIssue = issueService.getIssue(id);
+        Issue issue = new Issue();
+
+        try {
+            issue = futureIssue.get();
+        }
+        catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+
         return ResponseEntity.ok(MapperUtil.mapObject(issue, IssueDTO.class));
     }
 
     @Override
     public ResponseEntity<List<IssueDTO>> getIssues(SearchIssues searchIssues) {
 
-        List<Issue> issues = issueService.getIssues();
+        List<Issue> issues = new ArrayList<>();
+        Future<List<Issue>> futureIssues = issueService.getIssues();
+
+        try {
+            issues = futureIssues.get();
+        }
+        catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+
         mappedIssues = MapperUtil.mapList(issues, IssueDTO.class);
 
-        if (!comicIssues.isEmpty()) comicIssues.clear();
+        if (!comicIssues.isEmpty())
+            comicIssues.clear();
 
         if (searchIssues.getTitle() == null || Objects.equals(searchIssues.getTitle(), "")) {
             int iterations = 5;

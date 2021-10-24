@@ -10,19 +10,24 @@ import retrofit2.Response;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 // https://stackoverflow.com/q/6827752 -> Difference between Spring Annotations
 @Component
 public class IssueService {
 
-    RetrofitService retrofitService;
+    private final RetrofitService retrofitService;
+    private final ExecutorService executor = Executors.newFixedThreadPool(2);
 
     public IssueService(RetrofitService retrofitService) {
         this.retrofitService = retrofitService;
     }
 
+
     @Cacheable("issues") // Not BEAN, but an Annotation
-    public List<Issue> getIssues() throws RuntimeException {
+    public Future<List<Issue>> getIssues() throws RuntimeException {
         Call<List<Issue>> retrofitCall = retrofitService.getIssues();
         Response<List<Issue>> response;
 
@@ -37,19 +42,18 @@ public class IssueService {
                 );
             }
 
-            return response.body();
+            return executor.submit(response::body);
         }
         catch (IOException e) {
             e.printStackTrace();
-            // TODO: Create own exception that extends RuntimeException and include Spring magic
-            // Spring annotated runtime exception for HTTP errors
             throw new RuntimeException("Custom error message");
         }
     }
 
-    public Issue getIssue(BigDecimal id) throws RuntimeException {
+    public Future<Issue> getIssue(BigDecimal id) throws RuntimeException {
         Call<Issue> retrofitCall = retrofitService.getIssue(id);
         Response<Issue> response;
+
         try {
             response = retrofitCall.execute();
 
@@ -61,7 +65,7 @@ public class IssueService {
                 );
             }
 
-            return response.body();
+            return executor.submit(response::body);
         }
         catch (IOException e) {
             e.printStackTrace();
