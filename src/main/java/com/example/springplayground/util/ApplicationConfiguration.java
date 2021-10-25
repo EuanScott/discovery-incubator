@@ -4,6 +4,7 @@ import com.example.springplayground.retrofit.RetrofitService;
 import okhttp3.OkHttpClient;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
@@ -23,6 +24,7 @@ public class ApplicationConfiguration {
     }
 
     @Bean("retrofitServiceEnv")
+    @Profile("!test")
     public String retrofitServiceEnv() {
         return env.getProperty("retrofit.service.url");
     }
