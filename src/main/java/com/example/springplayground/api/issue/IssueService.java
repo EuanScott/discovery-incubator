@@ -10,16 +10,12 @@ import retrofit2.Response;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 // https://stackoverflow.com/q/6827752 -> Difference between Spring Annotations
 @Component
 public class IssueService {
 
     private final RetrofitService retrofitService;
-    private final ExecutorService executor = Executors.newFixedThreadPool(2);
 
     public IssueService(RetrofitService retrofitService) {
         this.retrofitService = retrofitService;
@@ -27,7 +23,7 @@ public class IssueService {
 
 
     @Cacheable("issues") // Not BEAN, but an Annotation
-    public Future<List<Issue>> getIssues() throws RuntimeException {
+    public List<Issue> getIssues() throws RuntimeException {
         Call<List<Issue>> retrofitCall = retrofitService.getIssues();
         Response<List<Issue>> response;
 
@@ -42,7 +38,7 @@ public class IssueService {
                 );
             }
 
-            return executor.submit(response::body);
+            return response.body();
         }
         catch (IOException e) {
             e.printStackTrace();
@@ -50,7 +46,7 @@ public class IssueService {
         }
     }
 
-    public Future<Issue> getIssue(BigDecimal id) throws RuntimeException {
+    public Issue getIssue(BigDecimal id) throws RuntimeException {
         Call<Issue> retrofitCall = retrofitService.getIssue(id);
         Response<Issue> response;
 
@@ -65,7 +61,7 @@ public class IssueService {
                 );
             }
 
-            return executor.submit(response::body);
+            return response.body();
         }
         catch (IOException e) {
             e.printStackTrace();
