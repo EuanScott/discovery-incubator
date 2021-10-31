@@ -3,7 +3,7 @@ package com.example.springplayground.api.issue;
 import com.example.springplayground.controller.api.IssuesApi;
 import com.example.springplayground.controller.model.IssueDTO;
 import com.example.springplayground.controller.model.SearchIssues;
-import com.example.springplayground.exception.IssueException;
+import com.example.springplayground.exception.DownStreamApiException;
 import com.example.springplayground.service.model.Issue;
 import com.example.springplayground.util.MapperUtil;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -25,28 +25,35 @@ public class IssueController implements IssuesApi {
 
     private final IssueService issueService;
     private final ExecutorService executorService;
+    private final Long executorServiceTimeout;
+    private final TimeUnit executorServiceTimeoutType;
 
     private List<IssueDTO> comicIssues = new ArrayList<>();
     private List<IssueDTO> mappedIssues;
 
-    public IssueController(IssueService issueService, @Qualifier("multiThreaded") ExecutorService executorService) {
+    public IssueController(
+            IssueService issueService,
+            @Qualifier("multiThreadedExecutorService") ExecutorService executorService,
+            @Qualifier("multiThreadedExecutorServiceTimeout") Long executorServiceTimeout,
+            @Qualifier("multiThreadedExecutorServiceTimeoutType") TimeUnit executorServiceTimeoutType
+    ) {
         this.issueService = issueService;
         this.executorService = executorService;
+        this.executorServiceTimeout = executorServiceTimeout;
+        this.executorServiceTimeoutType = executorServiceTimeoutType;
     }
 
     @Override
     public ResponseEntity<IssueDTO> getIssueById(BigDecimal id) {
         Issue issue;
-        Future<Issue> futureIssue = executorService.submit(() -> {
-            return issueService.getIssue(id);
-        });
+        Future<Issue> futureIssue = executorService.submit(() -> issueService.getIssue(id));
 
         try {
-            issue = futureIssue.get(10000, TimeUnit.MILLISECONDS);
+            issue = futureIssue.get(executorServiceTimeout, executorServiceTimeoutType);
         }
         catch (ExecutionException | InterruptedException | TimeoutException | RuntimeException error) {
-            executorService.shutdown();
-            throw new IssueException("An unexpected error occurred: ", error);
+            futureIssue.cancel(false);
+            throw new DownStreamApiException(error);
         }
 
         return ResponseEntity.ok(MapperUtil.mapObject(issue, IssueDTO.class));
@@ -56,16 +63,14 @@ public class IssueController implements IssuesApi {
     public ResponseEntity<List<IssueDTO>> getIssues(SearchIssues searchIssues) {
 
         List<Issue> issues;
-        Future<List<Issue>> futureIssues = executorService.submit(() -> {
-            return issueService.getIssues();
-        });
+        Future<List<Issue>> futureIssues = executorService.submit(() -> issueService.getIssues());
 
         try {
-            issues = futureIssues.get(10000, TimeUnit.MILLISECONDS);
+            issues = futureIssues.get(executorServiceTimeout, executorServiceTimeoutType);
         }
         catch (ExecutionException | InterruptedException | TimeoutException | RuntimeException error) {
-            executorService.shutdown();
-            throw new IssueException("An unexpected error occurred: ", error);
+            futureIssues.cancel(false);
+            throw new DownStreamApiException(error);
         }
 
         mappedIssues = MapperUtil.mapList(issues, IssueDTO.class);

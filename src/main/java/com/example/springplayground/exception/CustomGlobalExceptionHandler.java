@@ -11,8 +11,8 @@ import java.time.LocalDateTime;
 @ControllerAdvice
 public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(IssueException.class)
-    public ResponseEntity<CustomErrorResponse> customHandleNotFound(Exception ex) {
+    @ExceptionHandler(DownStreamApiException.class)
+    public ResponseEntity<CustomErrorResponse> customHandleNotFound(Exception ex, Throwable throwable) {
 
         CustomErrorResponse error = new CustomErrorResponse();
 
