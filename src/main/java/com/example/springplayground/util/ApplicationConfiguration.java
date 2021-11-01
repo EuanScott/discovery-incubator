@@ -2,6 +2,7 @@ package com.example.springplayground.util;
 
 import com.example.springplayground.retrofit.RetrofitService;
 import okhttp3.OkHttpClient;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
@@ -15,8 +16,13 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class ApplicationConfiguration {
 
     // https://stackoverflow.com/a/40620318 -> Why not to use @Autowired, even though in this case it is suitable
-    // @Autowired
     private final Environment env;
+
+    // TODO: 2021/10/31 REMOVE!
+    @Autowired
+    private Environment environment;
+
+    // TODO: 2021/10/31 TEST THE DIFFERENT PROFILES ARE RUNNING CORRECTLY 
 
     public ApplicationConfiguration(Environment env) {
         Assert.notNull(env, "API Environment Variable must not be null!");
@@ -40,7 +46,12 @@ public class ApplicationConfiguration {
             @Qualifier("retrofitServiceEnv") String env,
             @Qualifier("okHttp") OkHttpClient okHttpClient
     ) {
-        System.out.println("ENV: " + env);
+        System.out.println("\nEnvironment: ");
+        System.out.println("URL: " + env);
+        for (String profileName : environment.getActiveProfiles()) {
+            System.out.println("Profile: " + profileName);
+        }
+        System.out.println("\n");
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(env)

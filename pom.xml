@@ -35,11 +35,6 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.20</version>
-        </dependency>
-        <dependency>
             <groupId>com.squareup.retrofit2</groupId>
             <artifactId>retrofit</artifactId>
             <version>2.3.0</version>
@@ -87,6 +82,12 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.github.tomakehurst</groupId>
+            <artifactId>wiremock</artifactId>
+            <version>1.58</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -110,7 +111,8 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>${project.basedir}/src/main/resources/static/swagger/controller-config.yml</inputSpec>
+                            <inputSpec>${project.basedir}/src/main/resources/static/swagger/controller-config.yml
+                            </inputSpec>
                             <language>spring</language>
                             <output>${project.build.directory}/generated-sources/swagger</output>
                             <modelPackage>com.example.springplayground.controller.model</modelPackage>
@@ -129,7 +131,8 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>${project.basedir}/src/main/resources/static/swagger/service-config.yml</inputSpec>
+                            <inputSpec>${project.basedir}/src/main/resources/static/swagger/service-config.yml
+                            </inputSpec>
                             <language>spring</language>
                             <output>${project.build.directory}/generated-sources/swagger</output>
                             <modelPackage>com.example.springplayground.service.model</modelPackage>

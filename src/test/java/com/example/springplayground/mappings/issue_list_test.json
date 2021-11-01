@@ -1,0 +1,40 @@
+[
+  {
+    "id": 0,
+    "title": "string",
+    "description": "string",
+    "seriesNumber": 0,
+    "publicationDate": "string",
+    "publisherId": 0,
+    "publisher": "string",
+    "creators": [
+      {
+        "id": 0,
+        "name": "string",
+        "countryOfResidence": "string",
+        "taxReferenceNumber": "string",
+        "emailAddress": "string"
+      }
+    ],
+    "stock": [
+      {
+        "id": 0,
+        "condition": "string",
+        "availableQuantity": 0,
+        "price": 0
+      }
+    ],
+    "thumbnail": {
+      "path": "string",
+      "extension": "string",
+      "pathIncludingExtension": "string"
+    },
+    "images": [
+      {
+        "path": "string",
+        "extension": "string",
+        "pathIncludingExtension": "string"
+      }
+    ]
+  }
+]
