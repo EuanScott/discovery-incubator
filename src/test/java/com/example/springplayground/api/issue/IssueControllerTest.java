@@ -2,11 +2,14 @@ package com.example.springplayground.api.issue;
 
 import com.example.springplayground.controller.model.IssueDTO;
 import com.example.springplayground.controller.model.SearchIssues;
+import com.example.springplayground.retrofit.RetrofitService;
 import com.example.springplayground.setup.WireMockService;
 import org.apache.http.impl.conn.Wire;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
@@ -20,28 +23,33 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @ActiveProfiles("test")
 @TestConfiguration
+@SpringBootTest
 class IssueControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+//    @Autowired
+//    private MockMvc mockMvc;
 
-    // @Autowired
+    @Autowired
     private IssueController issueControllerTest;
-
-    @Autowired
+    @InjectMocks
     private IssueService issueService;
+    @InjectMocks
+    private RetrofitService retrofitService;
+
+//    @Autowired
+//    private IssueService issueService;
 
     // @Autowired
-    // private WireMockService wireMockService;
+//     private WireMockService wireMockService;
 
     // @Before
     // public void setup() {
     //     this.mockMvc = MockMvcBuilders.standaloneSetup(issueControllerTest).build();
     // }
 
-    IssueControllerTest(IssueController issueController) {
+    IssueControllerTest() {
         WireMockService.beforeAll();
-        this.issueControllerTest = issueController;
+        issueControllerTest.setIssueService(issueService);
     }
 
     @Test
@@ -52,11 +60,6 @@ class IssueControllerTest {
          * 2) Call 'getIssues' endpoint - Lordie, lordie lord
          * 3) Validate successful response
          */
-
-
-        IssueDTO issue = new IssueDTO();
-
-        System.out.println(issue);
 
         // "this.issueControllerTest" is null
         SearchIssues searchIssues = new SearchIssues();

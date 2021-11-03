@@ -6,7 +6,7 @@ name: test
 environment: testing
 retrofit:
   service:
-    url: https://www.google.com
+    url: http://frontendshowcase.azurewebsites.net/api/
 
 ---
 

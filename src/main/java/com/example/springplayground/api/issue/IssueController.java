@@ -20,12 +20,19 @@ import java.util.stream.IntStream;
 @RequestMapping("/api")
 public class IssueController implements IssuesApi {
 
-    private final IssueService issueService;
+    private IssueService issueService;
 
     private List<IssueDTO> comicIssues = new ArrayList<>();
     private List<IssueDTO> mappedIssues;
 
     public IssueController(IssueService issueService) {
+        this.issueService = issueService;
+    }
+
+    public IssueController() {
+    }
+
+    public void setIssueService(IssueService issueService) {
         this.issueService = issueService;
     }
 
