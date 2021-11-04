@@ -1,55 +1,46 @@
 package com.example.springplayground.api.issue;
 
-import com.example.springplayground.controller.model.IssueDTO;
-import com.example.springplayground.controller.model.SearchIssues;
-import com.example.springplayground.retrofit.RetrofitService;
-import com.example.springplayground.setup.WireMockService;
-import org.apache.http.impl.conn.Wire;
+import com.example.springplayground.SpringPlaygroundApplication;
+import com.example.springplayground.util.ApplicationConfiguration;
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.springframework.beans.factory.DisposableBean;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 
-import javax.annotation.PreDestroy;
-
-import java.util.List;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
+// TODO: 11/4/2021 Create TestApplicationConfiguration class - e.g. host bean & includes normal configuration
 
 @ActiveProfiles("test")
-@TestConfiguration
-@SpringBootTest
+@ContextConfiguration(classes = {SpringPlaygroundApplication.class, ApplicationConfiguration.class})
+@RunWith(value = SpringJUnit4ClassRunner.class)
+@WebAppConfiguration
 class IssueControllerTest {
 
-//    @Autowired
-//    private MockMvc mockMvc;
-
-    @Autowired
     private IssueController issueControllerTest;
-    @InjectMocks
-    private IssueService issueService;
-    @InjectMocks
-    private RetrofitService retrofitService;
 
-//    @Autowired
-//    private IssueService issueService;
+    @Autowired // Only acceptable in tests
+    private IssueService issueService;
 
     // @Autowired
-//     private WireMockService wireMockService;
+    // @Qualifier("wireMockServer")
+    // private WireMockServer wireMockServer;
+    // @InjectMocks
+    // private RetrofitService retrofitService;
 
-    // @Before
-    // public void setup() {
-    //     this.mockMvc = MockMvcBuilders.standaloneSetup(issueControllerTest).build();
-    // }
+    private final WireMockServer wireMockServer = new WireMockServer(
+            new WireMockConfiguration().port(8080)
+    );
 
-    IssueControllerTest() {
-        WireMockService.beforeAll();
-        issueControllerTest.setIssueService(issueService);
+    @BeforeEach
+    public void before() {
+        wireMockServer.start();
     }
 
     @Test
@@ -61,30 +52,19 @@ class IssueControllerTest {
          * 3) Validate successful response
          */
 
-        // "this.issueControllerTest" is null
-        SearchIssues searchIssues = new SearchIssues();
-        ResponseEntity<List<IssueDTO>> result = issueControllerTest.getIssues(searchIssues);
-
-        assertThat(result.getStatusCode().toString().equals("200"));
-
-        // mockMvc.perform(
-        //                 post("api/issues")
-        //                         .contentType(MediaType.APPLICATION_JSON)
-        //                         .content(mapper.writeValueAsString(req))
-        //         )
-        //         .andDo((print()))
-        //         .andExpect(status().isOk());
-
-        // WireMockService.stubFor(get(urlEqualTo("/some/thing"))
-        //         .willReturn(aResponse()
-        //                 .withHeader("Content-Type", "text/plain")
-        //                 .withBody("Hello world!")));
+        // SearchIssues searchIssues = new SearchIssues();
+        // ResponseEntity<List<IssueDTO>> result = issueControllerTest.getIssues(searchIssues);
         //
-        // assertThat(testClient.get("/some/thing").statusCode(), is(200));
-        // assertThat(testClient.get("/some/thing/else").statusCode(), is(404));
+        // assertThat(result.getStatusCode().toString().equals("200"));
 
 
-        // given
+        wireMockServer.stubFor(WireMock.post(urlMatching("/api/issues"))
+                .withRequestBody(equalToJson("title = null"))
+                .willReturn(aResponse()
+                        .withStatus(200))
+        );
+
+        // // given
         // int numberOne = 20;
         // int numberTwo = 30;
         //
@@ -94,7 +74,5 @@ class IssueControllerTest {
         // // then
         // int expected = 50;
         // assertThat(result).isEqualTo(expected);
-
-        WireMockService.afterAll();
     }
 }

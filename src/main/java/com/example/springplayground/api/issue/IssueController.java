@@ -29,12 +29,12 @@ public class IssueController implements IssuesApi {
         this.issueService = issueService;
     }
 
-    public IssueController() {
-    }
-
-    public void setIssueService(IssueService issueService) {
-        this.issueService = issueService;
-    }
+//    public IssueController() {
+//    }
+//
+//    public void setIssueService(IssueService issueService) {
+//        this.issueService = issueService;
+//    }
 
     @Override
     public ResponseEntity<IssueDTO> getIssueById(BigDecimal id) {
