@@ -15,11 +15,12 @@ import java.util.List;
 @Component
 public class IssueService {
 
-    RetrofitService retrofitService;
+    private final RetrofitService retrofitService;
 
     public IssueService(RetrofitService retrofitService) {
         this.retrofitService = retrofitService;
     }
+
 
     @Cacheable("issues") // Not BEAN, but an Annotation
     public List<Issue> getIssues() throws RuntimeException {
@@ -41,8 +42,6 @@ public class IssueService {
         }
         catch (IOException e) {
             e.printStackTrace();
-            // TODO: Create own exception that extends RuntimeException and include Spring magic
-            // Spring annotated runtime exception for HTTP errors
             throw new RuntimeException("Custom error message");
         }
     }
@@ -50,6 +49,7 @@ public class IssueService {
     public Issue getIssue(BigDecimal id) throws RuntimeException {
         Call<Issue> retrofitCall = retrofitService.getIssue(id);
         Response<Issue> response;
+
         try {
             response = retrofitCall.execute();
 
