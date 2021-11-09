@@ -1,78 +1,129 @@
 package com.example.springplayground.api.issue;
 
 import com.example.springplayground.SpringPlaygroundApplication;
-import com.example.springplayground.util.ApplicationConfiguration;
+import com.example.springplayground.setup.TestApplicationConfiguration;
 import com.github.tomakehurst.wiremock.WireMockServer;
-import com.github.tomakehurst.wiremock.client.WireMock;
-import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import java.io.IOException;
+
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
-// TODO: 11/4/2021 Create TestApplicationConfiguration class - e.g. host bean & includes normal configuration
+import static org.junit.Assert.assertEquals;
 
 @ActiveProfiles("test")
-@ContextConfiguration(classes = {SpringPlaygroundApplication.class, ApplicationConfiguration.class})
+@ContextConfiguration(classes = {SpringPlaygroundApplication.class, TestApplicationConfiguration.class})
 @RunWith(value = SpringJUnit4ClassRunner.class)
+@SpringBootTest
 @WebAppConfiguration
-class IssueControllerTest {
+public class IssueControllerTest {
 
     private IssueController issueControllerTest;
 
     @Autowired // Only acceptable in tests
     private IssueService issueService;
 
-    // @Autowired
-    // @Qualifier("wireMockServer")
-    // private WireMockServer wireMockServer;
-    // @InjectMocks
-    // private RetrofitService retrofitService;
+    @Autowired // Only acceptable in tests
+    private WireMockServer wireMockServer;
 
-    private final WireMockServer wireMockServer = new WireMockServer(
-            new WireMockConfiguration().port(8080)
-    );
+    private final CloseableHttpClient httpClient = HttpClients.createDefault();
 
-    @BeforeEach
-    public void before() {
-        wireMockServer.start();
+    @Before
+    public void setup() {
+        wireMockServer.resetMappings();
+        wireMockServer.resetRequests();
+        wireMockServer.resetToDefaultMappings();
     }
 
     @Test
-    public void contextLoads() throws Exception {
-        /**
-         * TODO:
-         * 1) Create a Wiremock service - how much info should there be in the service?
-         * 2) Call 'getIssues' endpoint - Lordie, lordie lord
-         * 3) Validate successful response
-         */
+    public void httpStatusOkay() throws IOException {
 
-        // SearchIssues searchIssues = new SearchIssues();
-        // ResponseEntity<List<IssueDTO>> result = issueControllerTest.getIssues(searchIssues);
-        //
-        // assertThat(result.getStatusCode().toString().equals("200"));
+        System.out.println("A-Okay");
 
-
-        wireMockServer.stubFor(WireMock.post(urlMatching("/api/issues"))
-                .withRequestBody(equalToJson("title = null"))
+        // TODO: 11/9/2021 What is this meant for exactly?
+        // Can call from postman
+        wireMockServer.stubFor(post(urlMatching("/api/Issues"))
+                .withRequestBody(equalToJson("{\"title\": null}"))
                 .willReturn(aResponse()
-                        .withStatus(200))
+                        .withStatus(HttpStatus.OK.value())
+                )
         );
 
-        // // given
-        // int numberOne = 20;
-        // int numberTwo = 30;
-        //
-        // // when
-        // int result = numberOne + numberTwo;
-        //
-        // // then
-        // int expected = 50;
-        // assertThat(result).isEqualTo(expected);
+        // TODO: 11/9/2021 How can I get this to call my custom endpoint and not 3rd party endpoint?
+        // HttpGet request = new HttpGet("http://frontendshowcase.azurewebsites.net/api/Issues");
+        HttpPost request = new HttpPost("http://localhost:8087/api/issues");
+        HttpResponse httpResponse = httpClient.execute(request);
+
+        int responseStatusCode = httpResponse.getStatusLine().getStatusCode();
+        System.out.println("Response Status Code: " + responseStatusCode);
+
+        assertEquals(200, responseStatusCode);
     }
+
+    @Test
+    public void httpStatusNotFound() throws IOException {
+        System.out.println("A-Not-Okay");
+
+        wireMockServer.stubFor(post(urlMatching("/api/issues"))
+                .withRequestBody(equalToJson("{\"title\": null}"))
+                .willReturn(aResponse()
+                        .withStatus(HttpStatus.OK.value())
+                )
+        );
+
+        HttpGet request = new HttpGet("http://frontendshowcase.azurewebsites.net/api/Issue");
+        HttpResponse httpResponse = httpClient.execute(request);
+
+        int responseStatusCode = httpResponse.getStatusLine().getStatusCode();
+        System.out.println("Response Status Code: " + responseStatusCode);
+
+        assertEquals(404, responseStatusCode);
+    }
+
+    @Test
+    public void testRequestBody() throws IOException {
+        System.out.println("Request Body Test");
+
+        wireMockServer.stubFor(post(urlMatching("/api/issues"))
+                .withRequestBody(equalToJson("{\"title\": \"captain\"}"))
+                .willReturn(aResponse()
+                        .withStatus(HttpStatus.OK.value())
+                )
+        );
+    }
+
+    // @Test
+    // public void testResponseBody() throws IOException {
+    //     System.out.println("Response Body Test");
+    //
+    //     wireMockServer.stubFor(post(urlMatching("/api/issues"))
+    //             .withRequestBody(equalToJson("{\"title\": null}"))
+    //             .withHeader("Content-Type", containing("application/json"))
+    //             .willReturn(aResponse()
+    //                     .withStatus(HttpStatus.OK.value())
+    //                     .withBody(String.valueOf(equalToJson("{}")))
+    //             )
+    //     );
+    //
+    //     HttpGet request = new HttpGet("http://frontendshowcase.azurewebsites.net/api/Issues");
+    //     HttpResponse httpResponse = httpClient.execute(request);
+    //
+    //     String path = request.getURI().getPath();
+    //     System.out.println("Request Path: " + path);
+    //
+    //     assertEquals("/api/Issues", path);
+    // }
 }
