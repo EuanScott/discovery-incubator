@@ -2,14 +2,11 @@ package com.example.springplayground.setup;
 
 import com.example.springplayground.util.ApplicationConfiguration;
 import com.github.tomakehurst.wiremock.WireMockServer;
-import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
-
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 
 @Configuration
 @EnableAutoConfiguration

@@ -49,6 +49,8 @@ public class IssueControllerTest {
         wireMockServer.resetMappings();
         wireMockServer.resetRequests();
         wireMockServer.resetToDefaultMappings();
+
+        // issueService = mock(IssueService.class);
     }
 
     @After
