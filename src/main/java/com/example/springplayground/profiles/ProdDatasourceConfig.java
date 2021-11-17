@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Profile("prod")
-public class ProdDatasourceConfig implements DatasourceConfig {
+public class ProdDatasourceConfig implements DataSourceConfig {
 
     @Override
     public void setup() {

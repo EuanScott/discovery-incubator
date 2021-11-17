@@ -1,5 +1,5 @@
 package com.example.springplayground.profiles;
 
-public interface DatasourceConfig {
+public interface DataSourceConfig {
     void setup();
 }

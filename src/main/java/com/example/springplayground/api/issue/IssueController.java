@@ -20,7 +20,7 @@ import java.util.stream.IntStream;
 @RequestMapping("/api")
 public class IssueController implements IssuesApi {
 
-    private IssueService issueService;
+    private final IssueService issueService;
 
     private List<IssueDTO> comicIssues = new ArrayList<>();
     private List<IssueDTO> mappedIssues;
@@ -28,13 +28,6 @@ public class IssueController implements IssuesApi {
     public IssueController(IssueService issueService) {
         this.issueService = issueService;
     }
-
-//    public IssueController() {
-//    }
-//
-//    public void setIssueService(IssueService issueService) {
-//        this.issueService = issueService;
-//    }
 
     @Override
     public ResponseEntity<IssueDTO> getIssueById(BigDecimal id) {

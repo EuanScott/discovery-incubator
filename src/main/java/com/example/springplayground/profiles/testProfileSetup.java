@@ -5,10 +5,10 @@ import org.springframework.context.annotation.Bean;
 
 public class testProfileSetup {
     @Autowired
-    DatasourceConfig datasourceConfig;
+    DataSourceConfig dataSourceConfig;
 
     @Bean
     public void setupDatasource() {
-        datasourceConfig.setup();
+        dataSourceConfig.setup();
     }
 }

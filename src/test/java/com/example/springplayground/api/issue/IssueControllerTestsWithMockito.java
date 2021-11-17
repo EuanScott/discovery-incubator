@@ -3,7 +3,9 @@ package com.example.springplayground.api.issue;
 import com.example.springplayground.SpringPlaygroundApplication;
 import com.example.springplayground.controller.model.IssueDTO;
 import com.example.springplayground.controller.model.SearchIssues;
+import com.example.springplayground.service.model.Issue;
 import com.example.springplayground.setup.TestApplicationConfiguration;
+import com.example.springplayground.util.MapperUtil;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
@@ -23,6 +25,7 @@ import java.io.FileReader;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -33,34 +36,50 @@ import static org.mockito.Mockito.when;
 @ContextConfiguration(classes = {SpringPlaygroundApplication.class, TestApplicationConfiguration.class})
 @SpringBootTest
 @WebAppConfiguration
-public class IssueControllerMocks {
+public class IssueControllerTestsWithMockito {
 
-    // @Rule
-    // public MockitoRule initRule = MockitoJUnit.rule();
-
-    // @Mock
-    // IssueService issueService;
+    @Mock
+    IssueService issueService;
 
     @Mock
     IssueController issueController;
 
-    // @Mock
-    // List<Issue> issueList;
-
-    /**
-     * TODO:
-     *  How to get the thenReturn to return a custom JSON response that I create?
-     *  Do I test the issueService or the issueController?
-     *      -> I feel I should be calling the controller directly as that is what the user would interact with and not care about the service
-     */
     @Test
     public void mockGetIssues() {
-        SearchIssues searchIssues = new SearchIssues();
-        ResponseEntity<List<IssueDTO>> customResponse = ResponseEntity.ok(Arrays.asList(new IssueDTO(), new IssueDTO()));
+        // given
+        List<Issue> customResponse = Arrays.asList(new Issue(), new Issue());
+        when(issueService.getIssues()).thenReturn(customResponse);
 
-        when(issueController.getIssues(searchIssues)).thenReturn(customResponse);
+        // when
+        List<IssueDTO> mappedIssues;
+        mappedIssues = MapperUtil.mapList(issueService.getIssues(), IssueDTO.class);
 
-        assertEquals(customResponse, issueController.getIssues(searchIssues));
+        // then
+        assertEquals(Arrays.asList(new IssueDTO(), new IssueDTO()), mappedIssues);
+    }
+
+    @Test
+    public void mockGetIssue() {
+        // given
+        List<Issue> customResponse = Arrays.asList(new Issue(), new Issue());
+        when(issueService.getIssues()).thenReturn(customResponse);
+
+        // when
+        List<IssueDTO> mappedIssues;
+        mappedIssues = MapperUtil.mapList(issueService.getIssues(), IssueDTO.class);
+
+        List<IssueDTO> comicIssues;
+        String issueName = "";
+        comicIssues = mappedIssues
+                .parallelStream()
+                .filter(issue -> {
+                    String issueTitle = (issue.getTitle() == null) ? "" : issue.getTitle().toLowerCase();
+                    return issueTitle.contains(issueName);
+                })
+                .collect(Collectors.toList());
+
+        // then
+        assertEquals(Arrays.asList(new IssueDTO(), new IssueDTO()), comicIssues);
     }
 
     // @Test
