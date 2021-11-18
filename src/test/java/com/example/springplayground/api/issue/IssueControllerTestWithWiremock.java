@@ -5,13 +5,10 @@ import com.example.springplayground.controller.model.IssueDTO;
 import com.example.springplayground.controller.model.SearchIssues;
 import com.example.springplayground.setup.TestApplicationConfiguration;
 import com.github.tomakehurst.wiremock.WireMockServer;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,10 +17,12 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ActiveProfiles("test")
 @ContextConfiguration(classes = {SpringPlaygroundApplication.class, TestApplicationConfiguration.class})
@@ -38,12 +37,6 @@ public class IssueControllerTestWithWiremock {
     @Autowired
     private IssueController issueController;
 
-    @Autowired
-    @Qualifier("retrofitServiceEnv")
-    private String wireMockURL;
-
-    private final CloseableHttpClient httpClient = HttpClients.createDefault();
-
     @Before
     public void setup() {
         wireMockServer.resetMappings();
@@ -52,114 +45,56 @@ public class IssueControllerTestWithWiremock {
     }
 
     @Test
-    public void getIssuesHttpOkay() throws IOException {
+    public void getIssuesWithoutSearchTerm() {
 
-        // Call a fake server to return me a hard-coded response
-        wireMockServer.stubFor(post(urlMatching("/api/issues"))
-                .withRequestBody(equalToJson("{\"title\": null}"))
+        // Create a fake server to return me a hard-coded response from the Down Stream
+        wireMockServer.stubFor(get(urlEqualTo("/Issues"))
                 .willReturn(aResponse()
                         .withStatus(HttpStatus.OK.value())
-                        .withBodyFile("src/test/resources/__files/issue_test.json")
+                        .withBodyFile("issue_test.json")
                 )
         );
 
-
-        /**
-         * TODO:
-         *  I am unable to call the service directly -> "use a service wrapper that uses a service bean of which that service bean is pointing to the wiremock serverl."
-         */
+        // Call the issue controller that will be using my fake server to return me the pre-defined response body
         SearchIssues searchIssues = new SearchIssues();
-        ResponseEntity<List<IssueDTO>> issues = issueController.getIssues(searchIssues);
+        ResponseEntity<List<IssueDTO>> issuesResponse = issueController.getIssues(searchIssues);
 
-        System.out.println(issues);
+        // Base check: Make sure that the response object exists
+        assertNotNull(issuesResponse);
 
+        // Make sure that the amount of Issues being returned is the correct amount
+        List<IssueDTO> issues = issuesResponse.getBody();
+        assertNotNull(issues);
+        assertEquals(2, issues.size());
 
-        // HttpPost request = new HttpPost(wireMockURL + "/api/issues");
-        //
-        // request.setHeader("Accept", "application/json");
-        // request.setHeader("Content-type", "application/json");
-        //
-        // String json = "{ \"title\": null}";
-        // StringEntity params = new StringEntity(json);
-        // request.setEntity(params);
-        //
-        // HttpResponse httpResponse = httpClient.execute(request);
-        //
-        // int responseStatusCode = httpResponse.getStatusLine().getStatusCode();
-        // System.out.println("Response Status Code: " + responseStatusCode);
-
-        // String responseString = EntityUtils.toString(httpResponse.getEntity(), "UTF-8");
-        // System.out.println(responseString);
-        //
-        // assertEquals(200, responseStatusCode);
+        // Check that the Issue response being returned has the correct response that I have mocked out earlier
+        IssueDTO issue = issues.get(0);
+        assertNotNull(issue);
+        assertEquals(BigDecimal.valueOf(58758), issue.getId());
+        assertEquals("Moon Girl and Devil Dinosaur (2015) #5 (Guerra Wop Variant)", issue.getTitle());
     }
 
-    // @Test
-    // public void getIssuesHttpNotOkay() throws IOException {
-    //     System.out.println("getIssues A-Not-Okay");
-    //
-    //     wireMockServer.stubFor(post(urlMatching("/api/issues"))
-    //             .withRequestBody(equalToJson("{\"title\": null}"))
-    //             .willReturn(aResponse()
-    //                     .withStatus(HttpStatus.UNSUPPORTED_MEDIA_TYPE.value())
-    //             )
-    //     );
-    //
-    //     HttpPost request = new HttpPost(wireMockURL + "/api/issues");
-    //
-    //     request.setHeader("Accept", "application/json");
-    //     request.setHeader("Content-type", "application/json");
-    //
-    //     String json = "{ \"title\": null}";
-    //     StringEntity params = new StringEntity(json);
-    //     request.setEntity(params);
-    //
-    //     HttpResponse httpResponse = httpClient.execute(request);
-    //
-    //     int responseStatusCode = httpResponse.getStatusLine().getStatusCode();
-    //     System.out.println("Response Status Code: " + responseStatusCode);
-    //
-    //     assertEquals(415, responseStatusCode);
-    // }
-    //
-    // @Test
-    // public void getIssueHttpOkay() throws IOException {
-    //
-    //     System.out.println("getIssue A-Okay");
-    //
-    //     wireMockServer.stubFor(get(urlMatching("/api/issues/58373"))
-    //             .willReturn(aResponse()
-    //                     .withStatus(HttpStatus.OK.value())
-    //             )
-    //     );
-    //
-    //     HttpGet request = new HttpGet(wireMockURL + "/api/issues/58373");
-    //
-    //     HttpResponse httpResponse = httpClient.execute(request);
-    //
-    //     int responseStatusCode = httpResponse.getStatusLine().getStatusCode();
-    //     System.out.println("Response Status Code: " + responseStatusCode);
-    //
-    //     assertEquals(200, responseStatusCode);
-    // }
-    //
-    // @Test
-    // public void getIssueHttpNotOkay() throws IOException {
-    //     System.out.println("getIssue A-Not-Okay");
-    //
-    //     wireMockServer.stubFor(get(urlMatching("/api/issues/58373"))
-    //             .willReturn(aResponse()
-    //                     .withStatus(HttpStatus.UNSUPPORTED_MEDIA_TYPE.value())
-    //             )
-    //     );
-    //
-    //     HttpGet request = new HttpGet(wireMockURL + "/api/issues/58373");
-    //
-    //     HttpResponse httpResponse = httpClient.execute(request);
-    //
-    //     int responseStatusCode = httpResponse.getStatusLine().getStatusCode();
-    //     System.out.println("Response Status Code: " + responseStatusCode);
-    //
-    //     assertEquals(415, responseStatusCode);
-    // }
+    @Test
+    public void getIssuesWithSearchTerm() {
+
+        wireMockServer.stubFor(get(urlEqualTo("/Issues"))
+                .willReturn(aResponse()
+                        .withStatus(HttpStatus.OK.value())
+                        .withBodyFile("issue_test.json")
+                )
+        );
+
+        SearchIssues searchIssues = new SearchIssues();
+        searchIssues.setTitle("marvel universe");
+        ResponseEntity<List<IssueDTO>> issuesResponse = issueController.getIssues(searchIssues);
+
+        assertNotNull(issuesResponse);
+        List<IssueDTO> issues = issuesResponse.getBody();
+        assertNotNull(issues);
+        assertEquals(1, issues.size());
+        IssueDTO issue = issues.get(0);
+        assertNotNull(issue);
+        assertEquals(BigDecimal.valueOf(54781), issue.getId());
+        assertEquals("All-New, All-Different Marvel Universe (2015) #1", issue.getTitle());
+    }
 }
