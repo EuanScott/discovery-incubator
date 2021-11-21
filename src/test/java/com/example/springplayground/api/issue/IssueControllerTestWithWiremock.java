@@ -21,8 +21,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("test")
 @ContextConfiguration(classes = {SpringPlaygroundApplication.class, TestApplicationConfiguration.class})
@@ -51,7 +50,7 @@ public class IssueControllerTestWithWiremock {
         wireMockServer.stubFor(get(urlEqualTo("/Issues"))
                 .willReturn(aResponse()
                         .withStatus(HttpStatus.OK.value())
-                        .withBodyFile("issue_test.json")
+                        .withBodyFile("list_issues_test.json")
                 )
         );
 
@@ -80,7 +79,7 @@ public class IssueControllerTestWithWiremock {
         wireMockServer.stubFor(get(urlEqualTo("/Issues"))
                 .willReturn(aResponse()
                         .withStatus(HttpStatus.OK.value())
-                        .withBodyFile("issue_test.json")
+                        .withBodyFile("list_issues_test.json")
                 )
         );
 
@@ -97,4 +96,80 @@ public class IssueControllerTestWithWiremock {
         assertEquals(BigDecimal.valueOf(54781), issue.getId());
         assertEquals("All-New, All-Different Marvel Universe (2015) #1", issue.getTitle());
     }
+
+    @Test
+    public void getIssuesWithSearchTermResultEmpty() {
+
+        wireMockServer.stubFor(get(urlEqualTo("/Issues"))
+                .willReturn(aResponse()
+                        .withStatus(HttpStatus.OK.value())
+                        .withBodyFile("list_issues_test.json")
+                )
+        );
+
+        SearchIssues searchIssues = new SearchIssues();
+        searchIssues.setTitle("a name that doesn't exist");
+        ResponseEntity<List<IssueDTO>> issuesResponse = issueController.getIssues(searchIssues);
+
+        assertNotNull(issuesResponse);
+        List<IssueDTO> issues = issuesResponse.getBody();
+        assertNotNull(issues);
+        assertEquals(0, issues.size());
+    }
+
+    @Test
+    public void getIssuesWithDownstreamFailing() {
+
+        wireMockServer.stubFor(get(urlEqualTo("/Issues"))
+                .willReturn(aResponse()
+                        .withStatus(HttpStatus.INTERNAL_SERVER_ERROR.value()) // Why you no picking this up? expected: <500> but was: <200>
+                        .withBodyFile("list_issues_test.json")
+                )
+        );
+
+        SearchIssues searchIssues = new SearchIssues();
+        ResponseEntity<List<IssueDTO>> issuesResponse = issueController.getIssues(searchIssues);
+
+        assertNotNull(issuesResponse);
+        assertEquals(500,  issuesResponse.getStatusCode().value());
+    }
+
+    @Test
+    public void getIssueByIdWithId() {
+        // Create a fake server to return me a hard-coded response from the Down Stream
+        wireMockServer.stubFor(get(urlEqualTo("/Issues/58758"))
+                .willReturn(aResponse()
+                        .withStatus(HttpStatus.OK.value())
+                        .withBodyFile("issue_test.json")
+                )
+        );
+
+        ResponseEntity<IssueDTO> issuesResponse = issueController.getIssueById(BigDecimal.valueOf(58758));
+
+        assertNotNull(issuesResponse);
+
+        IssueDTO issue = issuesResponse.getBody();
+        assertNotNull(issue);
+        assertEquals(BigDecimal.valueOf(58758), issue.getId());
+        assertEquals("Moon Girl and Devil Dinosaur (2015) #5 (Guerra Wop Variant)", issue.getTitle());
+    }
+
+    // @Test
+    // public void getIssueByIdWithoutId() {
+    //
+    //     // Create a fake server to return me a hard-coded response from the Down Stream
+    //     wireMockServer.stubFor(get(urlEqualTo("/Issues/12345"))
+    //             .willReturn(aResponse()
+    //                     .withStatus(HttpStatus.OK.value())
+    //                     .withBody("null")
+    //             )
+    //     );
+    //
+    //     ResponseEntity<IssueDTO> issuesResponse = issueController.getIssueById(BigDecimal.valueOf(12345));
+    //
+    //     assertNotNull(issuesResponse);
+    //
+    //     IssueDTO issue = issuesResponse.getBody();
+    //     assertNull(issue);
+    // }
 }
