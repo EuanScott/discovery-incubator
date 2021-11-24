@@ -14,7 +14,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -24,8 +23,10 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
@@ -39,13 +40,20 @@ public class IssueControllerTestsWithMockito {
     @Mock
     IssueService issueService;
 
+    ExecutorService executorService;
+    Long executorServiceTimeout;
+    TimeUnit executorServiceTimeoutType;
+
     IssueController issueController;
 
     Gson gson = new Gson();
 
     @Before
     public void setup() {
-        issueController = new IssueController(issueService);
+        executorService = Executors.newFixedThreadPool(7);
+        executorServiceTimeoutType = TimeUnit.MILLISECONDS;
+        executorServiceTimeout = 10000L;
+        issueController = new IssueController(issueService, executorService, executorServiceTimeout, executorServiceTimeoutType);
     }
 
     @Test
@@ -112,7 +120,7 @@ public class IssueControllerTestsWithMockito {
 
     @Test
     public void mockGetIssuesDownstreamFailResponse() {
-        when(issueService.getIssues()).thenThrow(new RuntimeException("something"));
+        when(issueService.getIssues()).thenThrow(new RuntimeException("An Unknown error occurred. Please try again later"));
 
         try {
             SearchIssues searchIssues = new SearchIssues();
@@ -120,7 +128,7 @@ public class IssueControllerTestsWithMockito {
             // forcing the test to fail if execution reaches this point
             fail();
         } catch (RuntimeException rte) {
-            assertEquals("something", rte.getMessage());
+            assertEquals("An error occurred Downstream: java.util.concurrent.ExecutionException: java.lang.RuntimeException: An Unknown error occurred. Please try again later", rte.getMessage());
         } catch (Throwable e) {
             fail();
         }
@@ -142,7 +150,19 @@ public class IssueControllerTestsWithMockito {
         assertEquals("Moon Girl and Devil Dinosaur (2015) #5 (Guerra Wop Variant)", issue.getTitle());
     }
 
-    // test for get by ID
+    @Test
+    public void getIssueByIdWithAnInvalidId() {
+        when(issueService.getIssue(BigDecimal.valueOf(12345))).thenThrow(new RuntimeException("An Unknown error occurred. Please try again later"));
+
+        try {
+            issueService.getIssue(BigDecimal.valueOf(12345));
+            fail();
+        } catch (Throwable e) {
+            assertEquals("An Unknown error occurred. Please try again later", e.getMessage());
+        }
+    }
+
+    //#region Helpers
 
     private List<Issue> getListOfIssuesFromTestJson() throws FileNotFoundException {
         JsonReader reader = new JsonReader(new FileReader("src/test/resources/__files/list_issues_test.json"));
@@ -156,4 +176,5 @@ public class IssueControllerTestsWithMockito {
         }.getType());
     }
 
+    //#endregion
 }
