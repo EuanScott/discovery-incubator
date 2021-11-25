@@ -4,12 +4,10 @@ import com.example.springplayground.retrofit.RetrofitService;
 import okhttp3.OkHttpClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -20,11 +18,8 @@ public class ApplicationConfiguration {
     // https://stackoverflow.com/a/40620318 -> Why not to use @Autowired, even though in this case it is suitable
     private final Environment env;
 
-    // TODO: 2021/10/31 REMOVE!
     @Autowired
     private Environment environment;
-
-    // TODO: 2021/10/31 TEST THE DIFFERENT PROFILES ARE RUNNING CORRECTLY 
 
     public ApplicationConfiguration(Environment env) {
         Assert.notNull(env, "API Environment Variable must not be null!");

@@ -1,6 +1,7 @@
 package com.example.springplayground.api.issue;
 
 import com.example.springplayground.SpringPlaygroundApplication;
+import com.example.springplayground.controller.model.ImageDTO;
 import com.example.springplayground.controller.model.IssueDTO;
 import com.example.springplayground.controller.model.SearchIssues;
 import com.example.springplayground.setup.TestApplicationConfiguration;
@@ -45,7 +46,7 @@ public class IssueControllerTestWithWiremock {
     }
 
     @Test
-    public void getIssuesWithoutSearchTerm() {
+    public void getIssues_success_withoutSearchTerm() {
         // Create a fake server to return me a hard-coded response from the Down Stream
         wireMockServer.stubFor(get(urlEqualTo("/Issues"))
                 .willReturn(aResponse()
@@ -63,18 +64,31 @@ public class IssueControllerTestWithWiremock {
 
         // Make sure that the amount of Issues being returned is the correct amount
         List<IssueDTO> issues = issuesResponse.getBody();
-        assertNotNull(issues);
         assertEquals(2, issues.size());
 
         // Check that the Issue response being returned has the correct response that I have mocked out earlier
         IssueDTO issue = issues.get(0);
-        assertNotNull(issue);
         assertEquals(BigDecimal.valueOf(58758), issue.getId());
         assertEquals("Moon Girl and Devil Dinosaur (2015) #5 (Guerra Wop Variant)", issue.getTitle());
+        assertEquals(null, issue.getDescription());
+        assertEquals(-1, issue.getSeriesNumber());
+        assertEquals("2016-01-15T19:22:35Z", issue.getPublicationDate());
+        assertEquals(null, issue.getPublisherID());
+        assertEquals("Marvel", issue.getPublisher());
+        assertEquals(0, issue.getCreators().size());
+        assertEquals(0, issue.getStock().size());
+        assertEquals("http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available", issue.getThumbnail().getPath());
+        assertEquals("jpg", issue.getThumbnail().getExtension());
+        assertEquals("http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg", issue.getThumbnail().getPathIncludingExtension());
+        assertEquals(1, issue.getImages().size());
+        ImageDTO image = issue.getImages().get(0);
+        assertEquals("http://i.annihil.us/u/prod/marvel/i/mg/6/a0/56707df23de44", image.getPath());
+        assertEquals("jpg", image.getExtension());
+        assertEquals("http://i.annihil.us/u/prod/marvel/i/mg/6/a0/56707df23de44.jpg", image.getPathIncludingExtension());
     }
 
     @Test
-    public void getIssuesWithSearchTerm() {
+    public void getIssues_success_withSearchTerm() {
         wireMockServer.stubFor(get(urlEqualTo("/Issues"))
                 .willReturn(aResponse()
                         .withStatus(HttpStatus.OK.value())
@@ -97,7 +111,7 @@ public class IssueControllerTestWithWiremock {
     }
 
     @Test
-    public void getIssuesWithSearchTermResponseEmpty() {
+    public void getIssues_success_withSearchTerm_emptyResponse() {
         wireMockServer.stubFor(get(urlEqualTo("/Issues"))
                 .willReturn(aResponse()
                         .withStatus(HttpStatus.OK.value())
@@ -116,7 +130,7 @@ public class IssueControllerTestWithWiremock {
     }
 
     @Test
-    public void getIssuesWithDownstreamFailing() {
+    public void getIssues_failure_downstreamFailing() {
         wireMockServer.stubFor(get(urlEqualTo("/Issues"))
                 .willReturn(aResponse()
                         .withStatus(SC_INTERNAL_SERVER_ERROR)
@@ -133,7 +147,7 @@ public class IssueControllerTestWithWiremock {
     }
 
     @Test
-    public void getIssueByIdWithId() {
+    public void getIssue_byId_success_withId() {
         wireMockServer.stubFor(get(urlEqualTo("/Issues/58758"))
                 .willReturn(aResponse()
                         .withStatus(HttpStatus.OK.value())
@@ -152,7 +166,7 @@ public class IssueControllerTestWithWiremock {
     }
 
     @Test
-    public void getIssueByIdWithAnInvalidId() {
+    public void getIssue_byId_failure_invalidId() {
         wireMockServer.stubFor(get(urlEqualTo("/Issues/12345"))
                 .willReturn(aResponse()
                         .withStatus(HttpStatus.METHOD_NOT_ALLOWED.value())

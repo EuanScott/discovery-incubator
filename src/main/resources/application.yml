@@ -7,6 +7,12 @@ environment: testing
 retrofit:
   service:
     url: http://frontendshowcase.azurewebsites.net/api/
+executor:
+  threadPool:
+    maxSize: 3
+  timeout:
+    duration: 5000
+    timeUnit: "MILLISECONDS"
 
 ---
 
@@ -19,6 +25,12 @@ environment: development
 retrofit:
   service:
     url: https://jsonplaceholder.typicode.com
+executor:
+  threadPool:
+    maxSize: 5
+  timeout:
+    duration: 10000
+    timeUnit: "MILLISECONDS"
 
 
 ---
@@ -32,3 +44,9 @@ environment: production
 retrofit:
   service:
     url: http://frontendshowcase.azurewebsites.net/api/
+executor:
+  threadPool:
+    maxSize: 5
+  timeout:
+    duration: 10000
+    timeUnit: "MILLISECONDS"

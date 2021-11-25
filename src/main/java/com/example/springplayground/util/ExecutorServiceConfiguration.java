@@ -2,7 +2,7 @@ package com.example.springplayground.util;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
+import org.springframework.core.env.Environment;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -11,28 +11,31 @@ import java.util.concurrent.TimeUnit;
 @Configuration
 public class ExecutorServiceConfiguration {
 
-    @Bean("multiThreadedExecutorService")
-    @Profile("!test")
-    public ExecutorService fixedThreadPool() {
-        return Executors.newFixedThreadPool(7);
+    // TODO: When testing env is null!
+    private final Environment env;
+
+    public ExecutorServiceConfiguration(Environment env) {
+        this.env = env;
     }
 
-    @Bean("singleThreadedExecutorService")
-    @Profile("!test")
-    public ExecutorService singleThreadedExecutor() {
-        return Executors.newSingleThreadExecutor();
+    @Bean("multiThreadedExecutorService")
+    public ExecutorService fixedThreadPool() {
+        return Executors.newFixedThreadPool(7); //Integer.parseInt(env.getProperty("executor.threadPool.maxSize")));
     }
+
+    // @Bean("singleThreadedExecutorService")
+    // public ExecutorService singleThreadedExecutor() {
+    //     return Executors.newSingleThreadExecutor();
+    // }
 
     @Bean("multiThreadedExecutorServiceTimeout")
-    @Profile("!test")
     public long multiThreadedExecutorServiceTimeout() {
-        return 10000;
+        return 10000; //Long.parseLong(env.getProperty("executor.timeout.duration"));
     }
 
     @Bean("multiThreadedExecutorServiceTimeoutType")
-    @Profile("!test")
     public TimeUnit multiThreadedExecutorServiceTimeoutType() {
-        return TimeUnit.MILLISECONDS;
+        return TimeUnit.MILLISECONDS; //TimeUnit.valueOf(env.getProperty("executor.timeout.timeUnit"));
     }
 
 }
