@@ -6,6 +6,7 @@ import com.example.springplayground.controller.model.IssueDTO;
 import com.example.springplayground.controller.model.SearchIssues;
 import com.example.springplayground.service.model.Issue;
 import com.example.springplayground.setup.TestApplicationConfiguration;
+import com.example.springplayground.setup.TestExecutorServiceConfiguration;
 import com.example.springplayground.util.ExecutorServiceConfiguration;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -41,7 +42,7 @@ public class IssueControllerTestsWithMockito {
     IssueService issueService;
 
     @InjectMocks
-    ExecutorServiceConfiguration executorService;
+    TestExecutorServiceConfiguration executorService;
 
     IssueController issueController;
 

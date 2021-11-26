@@ -27,9 +27,9 @@ retrofit:
     url: https://jsonplaceholder.typicode.com
 executor:
   threadPool:
-    maxSize: 5
+    maxSize: 3
   timeout:
-    duration: 10000
+    duration: 5000
     timeUnit: "MILLISECONDS"
 
 
