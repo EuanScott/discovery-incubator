@@ -4,6 +4,7 @@ import com.example.springplayground.SpringPlaygroundApplication;
 import com.example.springplayground.controller.model.ImageDTO;
 import com.example.springplayground.controller.model.IssueDTO;
 import com.example.springplayground.controller.model.SearchIssues;
+import com.example.springplayground.exception.ServiceException;
 import com.example.springplayground.service.model.Issue;
 import com.example.springplayground.setup.TestApplicationConfiguration;
 import com.example.springplayground.setup.TestExecutorServiceConfiguration;
@@ -59,7 +60,7 @@ public class IssueControllerTestsWithMockito {
     }
 
     @Test
-    public void getIssues_success_withoutSearchTerm() throws FileNotFoundException {
+    public void getIssues_success_withoutSearchTerm() throws FileNotFoundException, ServiceException {
         // mock out the issue service
         List<Issue> customResponse = getListOfIssuesFromTestJson();
 
@@ -98,7 +99,7 @@ public class IssueControllerTestsWithMockito {
     }
 
     @Test
-    public void getIssues_success_withSearchTerm() throws FileNotFoundException {
+    public void getIssues_success_withSearchTerm() throws FileNotFoundException, ServiceException {
         List<Issue> customResponse = getListOfIssuesFromTestJson();
 
         when(issueService.getIssues()).thenReturn(customResponse);
@@ -118,7 +119,7 @@ public class IssueControllerTestsWithMockito {
     }
 
     @Test
-    public void getIssues_success_withSearchTerm_emptyResponse() throws FileNotFoundException {
+    public void getIssues_success_withSearchTerm_emptyResponse() throws FileNotFoundException, ServiceException {
         List<Issue> customResponse = getListOfIssuesFromTestJson();
 
         when(issueService.getIssues()).thenReturn(customResponse);
@@ -134,7 +135,7 @@ public class IssueControllerTestsWithMockito {
     }
 
     @Test
-    public void getIssues_failure_downstreamFailing() {
+    public void getIssues_failure_downstreamFailing() throws ServiceException {
         when(issueService.getIssues()).thenThrow(new RuntimeException("An Unknown error occurred. Please try again later"));
 
         try {
@@ -150,7 +151,7 @@ public class IssueControllerTestsWithMockito {
     }
 
     @Test
-    public void getIssue_byId_success_withId() throws FileNotFoundException {
+    public void getIssue_byId_success_withId() throws FileNotFoundException, ServiceException {
         Issue customResponse = getSingleIssuesFromTestJson();
 
         when(issueService.getIssue(BigDecimal.valueOf(58758))).thenReturn(customResponse);
@@ -166,7 +167,7 @@ public class IssueControllerTestsWithMockito {
     }
 
     @Test
-    public void getIssue_byId_failure_invalidId() {
+    public void getIssue_byId_failure_invalidId() throws ServiceException {
         when(issueService.getIssue(BigDecimal.valueOf(12345))).thenThrow(new RuntimeException("An Unknown error occurred. Please try again later"));
 
         try {

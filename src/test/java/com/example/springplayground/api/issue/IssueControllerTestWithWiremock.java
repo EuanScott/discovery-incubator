@@ -142,7 +142,7 @@ public class IssueControllerTestWithWiremock {
             issueController.getIssues(searchIssues);
             fail();
         } catch (Throwable e) {
-            assertEquals("", e.getMessage());
+            assertEquals("An error occurred Downstream: java.util.concurrent.ExecutionException: com.example.springplayground.exception.DownStreamApiException: An error occurred Downstream: java.lang.Throwable: ", e.getMessage());
         }
     }
 

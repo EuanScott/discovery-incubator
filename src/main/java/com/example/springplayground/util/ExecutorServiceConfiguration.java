@@ -1,5 +1,6 @@
 package com.example.springplayground.util;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -21,13 +22,9 @@ public class ExecutorServiceConfiguration {
 
     @Bean("multiThreadedExecutorService")
     public ExecutorService fixedThreadPool() {
+        // TODO: This thread size should be injected in as a qualified dependency item. -> What does this mean?
         return Executors.newFixedThreadPool(Integer.parseInt(env.getProperty("executor.threadPool.maxSize")));
     }
-
-    // @Bean("singleThreadedExecutorService")
-    // public ExecutorService singleThreadedExecutor() {
-    //     return Executors.newSingleThreadExecutor();
-    // }
 
     @Bean("multiThreadedExecutorServiceTimeout")
     public long multiThreadedExecutorServiceTimeout() {
