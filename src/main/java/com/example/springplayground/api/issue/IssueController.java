@@ -8,16 +8,14 @@ import com.example.springplayground.service.model.Issue;
 import com.example.springplayground.util.MapperUtil;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @RestController
 @RequestMapping("/api")
@@ -28,7 +26,6 @@ public class IssueController implements IssuesApi {
     private final Long executorServiceTimeout;
     private final TimeUnit executorServiceTimeoutType;
 
-    private List<IssueDTO> comicIssues = new ArrayList<>();
     private List<IssueDTO> mappedIssues;
 
     public IssueController(
@@ -50,8 +47,7 @@ public class IssueController implements IssuesApi {
 
         try {
             issue = futureIssue.get(executorServiceTimeout, executorServiceTimeoutType);
-        }
-        catch (ExecutionException | InterruptedException | TimeoutException | RuntimeException error) {
+        } catch (ExecutionException | InterruptedException | TimeoutException | RuntimeException error) {
             futureIssue.cancel(false);
             throw new DownStreamApiException(error);
         }
@@ -67,32 +63,26 @@ public class IssueController implements IssuesApi {
 
         try {
             issues = futureIssues.get(executorServiceTimeout, executorServiceTimeoutType);
-        }
-        catch (ExecutionException | InterruptedException | TimeoutException | RuntimeException error) {
+        } catch (ExecutionException | InterruptedException | TimeoutException | RuntimeException error) {
             futureIssues.cancel(false);
             throw new DownStreamApiException(error);
         }
 
         mappedIssues = MapperUtil.mapList(issues, IssueDTO.class);
+        List<IssueDTO> comicIssues;
 
-        if (!comicIssues.isEmpty())
-            comicIssues.clear();
-
-        if (searchIssues.getTitle() == null || Objects.equals(searchIssues.getTitle(), "")) {
-            int iterations = 5;
-
-            IntStream.range(0, iterations)
-                    .forEach(index -> comicIssues.addAll(mappedIssues));
-        } else {
-            String issueName = searchIssues.getTitle().toLowerCase();
+        if (StringUtils.hasText(searchIssues.getTitle())) {
+            String issueNameInLowercase = searchIssues.getTitle().toLowerCase();
 
             comicIssues = mappedIssues
                     .parallelStream()
-                    .filter(issue -> {
-                        String issueTitle = issue.getTitle().toLowerCase();
-                        return issueTitle.contains(issueName);
-                    })
+                    .filter(issue -> issue.getTitle().toLowerCase().contains(issueNameInLowercase))
                     .collect(Collectors.toList());
+        } else {
+            // Used for when I want to return 30 comic issues
+            // IntStream.range(0, 5)
+            //         .forEach(index -> comicIssues.addAll(mappedIssues));
+            comicIssues = mappedIssues;
         }
 
         return ResponseEntity.ok(comicIssues);
