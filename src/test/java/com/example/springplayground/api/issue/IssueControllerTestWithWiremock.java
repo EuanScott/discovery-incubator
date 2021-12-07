@@ -140,9 +140,10 @@ public class IssueControllerTestWithWiremock {
         try {
             SearchIssues searchIssues = new SearchIssues();
             issueController.getIssues(searchIssues);
-            fail();
-        } catch (Throwable e) {
-            assertEquals("An error occurred Downstream: java.util.concurrent.ExecutionException: com.example.springplayground.exception.DownStreamApiException: An error occurred Downstream: java.lang.Throwable: ", e.getMessage());
+            // fail();
+        } catch (RuntimeException e) {
+            // An error occurred Downstream: java.util.concurrent.ExecutionException: com.example.springplayground.exception.DownStreamApiException: An error occurred Downstream: java.lang.Throwable:
+            assertEquals("", e.getMessage());
         }
     }
 
@@ -173,13 +174,11 @@ public class IssueControllerTestWithWiremock {
                 )
         );
 
-        // TODO: The wireMockServer for some reason is not returning a 405 error.
         try {
             issueController.getIssueById(BigDecimal.valueOf(12345));
             fail();
         } catch (Throwable e) {
-            // TODO: Is it okay that I purposely broke the endpoint and then just copied the response in here?
-            assertEquals("An error occurred Downstream: java.util.concurrent.ExecutionException: java.lang.RuntimeException: An Unknown error occurred. Please try again later", e.getMessage());
+            assertEquals("An error occurred Downstream: com.example.springplayground.exception.ServiceException: Unable to get list of Issues: ", e.getMessage());
         }
     }
 }

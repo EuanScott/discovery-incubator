@@ -13,6 +13,9 @@ executor:
   timeout:
     duration: 5000
     timeUnit: "MILLISECONDS"
+  spring:
+    main:
+      allow-bean-definition-overriding: true
 
 ---
 
@@ -31,6 +34,9 @@ executor:
   timeout:
     duration: 5000
     timeUnit: "MILLISECONDS"
+  spring:
+    main:
+      allow-bean-definition-overriding: true
 
 
 ---
@@ -50,3 +56,6 @@ executor:
   timeout:
     duration: 10000
     timeUnit: "MILLISECONDS"
+  spring:
+    main:
+      allow-bean-definition-overriding: true

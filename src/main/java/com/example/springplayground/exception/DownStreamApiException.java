@@ -7,6 +7,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class DownStreamApiException extends RuntimeException {
 
     public DownStreamApiException(Throwable error) {
-        super("An error occurred Downstream: " + error);
+        super("An error occurred Downstream: " + error.getMessage());
     }
 }

@@ -8,7 +8,6 @@ import com.example.springplayground.exception.ServiceException;
 import com.example.springplayground.service.model.Issue;
 import com.example.springplayground.setup.TestApplicationConfiguration;
 import com.example.springplayground.setup.TestExecutorServiceConfiguration;
-import com.example.springplayground.util.ExecutorServiceConfiguration;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
@@ -43,7 +42,7 @@ public class IssueControllerTestsWithMockito {
     IssueService issueService;
 
     @InjectMocks
-    TestExecutorServiceConfiguration executorService;
+    TestExecutorServiceConfiguration testExecutorService;
 
     IssueController issueController;
 
@@ -53,9 +52,9 @@ public class IssueControllerTestsWithMockito {
     public void setup() {
         issueController = new IssueController(
                 issueService,
-                executorService.fixedThreadPool(),
-                executorService.multiThreadedExecutorServiceTimeout(),
-                executorService.multiThreadedExecutorServiceTimeoutType()
+                testExecutorService.testFixedThreadPool(),
+                testExecutorService.testMultiThreadedExecutorServiceTimeout(),
+                testExecutorService.testMultiThreadedExecutorServiceTimeoutType()
         );
     }
 

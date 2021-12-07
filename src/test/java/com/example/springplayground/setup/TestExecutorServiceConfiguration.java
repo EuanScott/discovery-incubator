@@ -9,21 +9,22 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 @Configuration
-@Profile("test")
+// @Profile("test")
+// Cannot register bean definition [...] for bean 'multiThreadedExecutorService': There is already bound.
 public class TestExecutorServiceConfiguration {
 
-    @Bean("multiThreadedExecutorService")
-    public ExecutorService fixedThreadPool() {
+    @Bean("testMultiThreadedExecutorService")
+    public ExecutorService testFixedThreadPool() {
         return Executors.newFixedThreadPool(3);
     }
 
-    @Bean("multiThreadedExecutorServiceTimeout")
-    public long multiThreadedExecutorServiceTimeout() {
+    @Bean("testMultiThreadedExecutorServiceTimeout")
+    public long testMultiThreadedExecutorServiceTimeout() {
         return 5000;
     }
 
-    @Bean("multiThreadedExecutorServiceTimeoutType")
-    public TimeUnit multiThreadedExecutorServiceTimeoutType() {
+    @Bean("testMultiThreadedExecutorServiceTimeoutType")
+    public TimeUnit testMultiThreadedExecutorServiceTimeoutType() {
         return TimeUnit.MILLISECONDS;
     }
 }

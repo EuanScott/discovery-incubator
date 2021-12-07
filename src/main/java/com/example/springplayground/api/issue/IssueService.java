@@ -45,7 +45,7 @@ public class IssueService {
             }
 
             return response.body();
-        } catch (IOException e) {
+        } catch (RuntimeException | IOException e) {
             e.printStackTrace();
             // throw new RuntimeException("An Unknown error occurred. Please try again later");
             throw new ServiceException("An Unknown error occurred. Please try again later");
